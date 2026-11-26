@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#191d1b">
+  <title>进化战争 · 第一关</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css?v=5">
+  <script defer src="battle.js?v=4"></script>
+  <script defer src="fighters.js?v=5"></script>
+  <script defer src="art.js?v=5"></script>
+  <script defer src="game.js?v=4.1"></script>
+</head>
+<body>
+  <main class="game-shell">
+    <header class="masthead">
+      <div class="wordmark" aria-label="进化战争">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+        <strong>进化战争</strong>
+      </div>
+      <nav class="utility" aria-label="游戏设置">
+        <button id="help" type="button">规则</button>
+        <button id="mute" type="button" aria-pressed="false">音效开</button>
+        <button id="fullscreen" type="button">全屏</button>
+        <button id="pause" type="button" disabled>暂停 <kbd>空格</kbd></button>
+      </nav>
+    </header>
+
+    <section class="arena" id="arena" data-mode="ready" aria-label="第一关战场">
+      <canvas id="board" width="1440" height="720" aria-label="我方和敌方城门之间的战场"></canvas>
+      <div class="arena-top">
+        <div class="camp camp-ally">
+          <div class="camp-line"><span><strong>我方</strong><small id="ally-era">石器时代</small></span><b id="ally-hp">450 / 450</b></div>
+          <progress id="ally-bar" value="450" max="450" aria-label="我方城门生命"></progress>
+        </div>
+        <div class="battle-clock"><small id="clock-label">剩余时间</small><strong id="clock">02:10</strong></div>
+        <div class="camp camp-enemy">
+          <div class="camp-line"><span><strong>敌方</strong><small>青铜时代</small></span><b id="enemy-hp">525 / 525</b></div>
+          <progress id="enemy-bar" value="525" max="525" aria-label="敌方城门生命"></progress>
+        </div>
+      </div>
+
+      <div class="wave-announcement" id="wave-announcement" hidden><span id="wave-announcement-label">敌军来袭</span><strong id="wave-announcement-title"></strong></div>
+      <div class="arena-bottom" id="arena-bottom" hidden>
+        <div class="intel"><small>战况</small><strong id="intel-title">斥候将至</strong><span id="intel-detail">先派矛兵，再让投石手跟上。</span></div>
+        <div class="dispatch"><small>敌军预告</small><strong id="upcoming">斥候试探 · 10 秒</strong></div>
+      </div>
+
+      <div class="overlay" id="overlay" role="region" aria-labelledby="overlay-title">
+        <article class="campaign-card">
+          <p class="overline" id="overlay-tag" hidden></p>
+          <h1 id="overlay-title">第一关</h1>
+          <p class="campaign-brief" id="overlay-copy">派出前排和远程，攻破对面的城门。</p>
+          <div id="result-stats" class="result-stats" hidden></div>
+          <div class="difficulty" id="difficulty" aria-label="选择难度">
+            <button id="mode-standard" type="button" aria-pressed="true">标准</button>
+            <button id="mode-story" type="button" aria-pressed="false">演练</button>
+          </div>
+          <label id="relic-choice" class="relic-choice" hidden><input id="equip-relic" type="checkbox"> 携带铜符 · 解锁守关重弩</label>
+          <div class="campaign-actions"><button class="major" id="primary" type="button">进入战场 <span aria-hidden="true">›</span></button><button class="secondary" id="overlay-restart" type="button" hidden>重开本场</button></div>
+          <p class="campaign-meta" id="overlay-meta"></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="command-board" id="commands" aria-label="战斗指令">
+      <div class="supply-pane">
+        <div class="supply-label"><span class="coin" aria-hidden="true"></span>补给</div>
+        <strong id="supply">127</strong>
+        <small id="income">每秒 +6.1</small>
+      </div>
+      <div class="roster-pane">
+        <div class="roster-caption"><span>招募</span><label class="formation">出兵位置 <select id="formation" aria-label="出兵位置"><option value="auto">自动</option><option value="0">远侧</option><option value="1">中间</option><option value="2">近侧</option></select></label></div>
+        <div id="roster" class="roster" aria-label="出兵"></div>
+      </div>
+      <div class="tactics-pane">
+        <button type="button" class="era-button" id="evolve" disabled><span class="era-mark" aria-hidden="true">⟡</span><span class="tactic-copy"><b id="evolve-name">升为青铜时代</b><small id="evolve-detail">等待进化</small></span><span class="tactic-end"><strong id="evolve-cost">54</strong><kbd>E</kbd></span><span id="evolve-fill" class="evolve-fill"></span></button>
+        <div class="tactics-row">
+          <button id="tower" class="tactic" type="button" disabled><b id="tower-name">投石台</b><small id="tower-info">78 补给</small><kbd>B</kbd></button>
+          <button id="horn" class="tactic" type="button" disabled><b>号角</b><small id="horn-info">40 补给</small><kbd>F</kbd></button>
+          <button id="research" class="tactic" type="button" disabled><b>军备</b><small id="research-info">训练与科技</small><kbd>T</kbd></button>
+        </div>
+      </div>
+    </section>
+    <footer class="field-footer"><span id="feedback" role="status"></span><span class="field-stats"><span id="ranged-tally" hidden>远程伤害 0</span><span id="record" hidden>战利金币 0</span></span></footer>
+  </main>
+
+  <dialog id="manual" class="sheet">
+    <header class="sheet-head"><h2>第一关规则</h2><button data-close type="button">关闭</button></header>
+    <dl class="manual-list">
+      <dt>怎么赢</dt><dd>在两分十秒内攻破敌方城门。我方城门失守或时间到，本关失败。</dd>
+      <dt>怎么组队</dt><dd>矛兵挡冲锋，远程跨排射击，突袭兵绕到后排。用近战攻城。招募栏可指定出兵位置。</dd>
+      <dt>怎么进化</dt><dd>三十秒后可付费升级青铜，五十一秒后免费。升级后开放新兵，已经出场的兵和工事还能用。</dd>
+      <dt>怎么守城</dt><dd>投石台只攻击前排和突袭，连溅射也会避开远程。号角让城门附近前排短时间减伤。</dd>
+      <dt>战利品</dt><dd>首次胜利获金币。胜利时城门至少剩四成生命可赢得守关铜符，重玩时可带上重弩图纸。</dd>
+    </dl>
+    <p class="keyboard-guide"><kbd>1</kbd>–<kbd>4</kbd> 招募 <kbd>E</kbd> 进化 <kbd>B</kbd> 工事 <kbd>F</kbd> 号角 <kbd>T</kbd> 军备 <kbd>空格</kbd> 暂停</p>
+  </dialog>
+
+  <dialog id="armory" class="sheet">
+    <header class="sheet-head"><h2>军备</h2><button data-close type="button">回到战场</button></header>
+    <section class="armory-section"><h3>兵种训练 <small id="training-cost"></small></h3><div id="training-options" class="training-options"></div></section>
+    <section class="armory-section"><h3>科技 <small id="tech-points"></small></h3><div id="tech-options" class="tech-options"></div></section>
+  </dialog>
+
+  <dialog id="fortification" class="sheet">
+    <header class="sheet-head"><h2>城门工事</h2><button data-close type="button">回到战场</button></header>
+    <p class="sheet-copy">工事位限建一座。投石台和重弩只拦前排与突袭兵，升代后仍可使用。</p>
+    <div class="tech-options" id="tower-options"></div>
+  </dialog>
+</body>
+</html>

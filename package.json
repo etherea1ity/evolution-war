@@ -1,0 +1,12 @@
+{
+  "name": "salt-pass",
+  "private": true,
+  "scripts": {
+    "build": "node build-models.cjs",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.187.0"
+  }
+}
